@@ -15,11 +15,10 @@ const createUser = async (req: Request, res: Response) => {
     });
     // return result;
   } catch (error: any) {
-    // res.status(500).json({
-    //   success: false,
-    //   message: error.message || 'Something went wrong',
-    // });
-    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Something went wrong',
+    });
   }
 };
 
@@ -39,16 +38,34 @@ const getAllUsers = async (req: Request, res: Response) => {
 const getSingleUser = async (req: Request, res: Response) => {
   try {
     const userId = req.params.userId;
-    console.log(userId);
-    const result = await UserServices.getSingleUser(userId);
-
-    res.status(200).json({
-      success: true,
-      message: 'Users fetched successfully!',
-      data: result,
-    });
+    const convertUserId = parseInt(userId);
+    const result = await UserServices.getSingleUser(convertUserId);
+    if (result) {
+      res.status(200).json({
+        success: true,
+        message: 'Users fetched successfully!',
+        data: result,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User not found!',
+        },
+      });
+    }
   } catch (error) {
-    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: {
+        code: 500,
+        description:
+          'An unexpected error occurred while processing the request.',
+      },
+    });
   }
 };
 
