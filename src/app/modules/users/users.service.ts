@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { TUser } from './users.interface';
 import { User } from './users.model';
 
@@ -5,14 +6,7 @@ const createUserIntoDB = async (userData: TUser) => {
   if (await User.isUserExists(userData.userId)) {
     throw new Error('User Allready Exists');
   }
-  const result = await User.create(userData); //built in static method
-  // const userInstance = new User(userData); //instance method
-  // if (await userInstance.isUserExists(userData.userId)) {
-  //   throw new Error('User Allready Exists');
-  // }
-  // const convertId = userData.userId.toString();
-
-  // const result = await userInstance.save();
+  const result = await User.create(userData);
   return result;
 };
 
@@ -38,9 +32,37 @@ const getSingleUser = async (id: number) => {
     return false;
   }
 };
+const deleteUser = async (id: number) => {
+  if (await User.isUserExists(id)) {
+    const deletedUser = await User.deleteOne({ userId: id });
+    return deletedUser;
+  } else {
+    return false;
+  }
+};
+
+const updateUser = async (id: number, updatedData: any) => {
+  const userExists = await User.isUserExists(id);
+  if (!userExists) {
+    return false;
+  }
+  const result = await User.findOneAndUpdate(
+    { userId: id },
+    { $set: updatedData },
+    { new: true, runValidators: true },
+  ).select({
+    password: 0,
+  });
+  if (!result) {
+    return false;
+  }
+  return { data: result.toObject() };
+};
 
 export const UserServices = {
   createUserIntoDB,
   getAllUsersIntoDB,
   getSingleUser,
+  deleteUser,
+  updateUser,
 };

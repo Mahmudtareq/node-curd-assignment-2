@@ -13,7 +13,6 @@ const createUser = async (req: Request, res: Response) => {
       message: 'User created successfully!',
       data: result,
     });
-    // return result;
   } catch (error: any) {
     res.status(500).json({
       success: false,
@@ -30,8 +29,17 @@ const getAllUsers = async (req: Request, res: Response) => {
       message: 'Users fetched successfully!',
       data: result,
     });
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+      error: {
+        code: 500,
+        description:
+          error.message ||
+          'An unexpected error occurred while processing the request.',
+      },
+    });
   }
 };
 
@@ -43,7 +51,7 @@ const getSingleUser = async (req: Request, res: Response) => {
     if (result) {
       res.status(200).json({
         success: true,
-        message: 'Users fetched successfully!',
+        message: 'User fetched successfully!',
         data: result,
       });
     } else {
@@ -56,13 +64,82 @@ const getSingleUser = async (req: Request, res: Response) => {
         },
       });
     }
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
-      message: 'Internal server error',
+      message: error.message,
       error: {
         code: 500,
         description:
+          error.message ||
+          'An unexpected error occurred while processing the request.',
+      },
+    });
+  }
+};
+const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId;
+    const convertUserId = parseInt(userId);
+    const result = await UserServices.deleteUser(convertUserId);
+    if (result) {
+      res.status(200).json({
+        success: true,
+        message: 'User deleted successfully!',
+        data: null,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User not found!',
+        },
+      });
+    }
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+      error: {
+        code: 500,
+        description:
+          error.message ||
+          'An unexpected error occurred while processing the request.',
+      },
+    });
+  }
+};
+const updateUser = async (req: Request, res: Response) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    const { user: userData } = req.body;
+    const result = await UserServices.updateUser(userId, userData);
+    if (result) {
+      res.status(200).json({
+        success: true,
+        message: 'User updated successfully!',
+        data: result.data,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User not found!',
+        },
+      });
+    }
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+      error: {
+        code: 500,
+        description:
+          error.message ||
           'An unexpected error occurred while processing the request.',
       },
     });
@@ -73,4 +150,6 @@ export const UserController = {
   createUser,
   getAllUsers,
   getSingleUser,
+  deleteUser,
+  updateUser,
 };
