@@ -19,6 +19,9 @@ const getAllUsersIntoDB = async () => {
     email: 1,
     address: 1,
   });
+  if (result.length === 0) {
+    return false;
+  }
   return result;
 };
 

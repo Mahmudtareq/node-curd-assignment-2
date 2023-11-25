@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 // export type Order = {
 //   productName: string
 //   price: number
@@ -20,7 +19,7 @@ export type TAddress = {
 export type TUser = {
   userId: number;
   username: string;
-  password: string; // Hashed password using bcrypt
+  password: string;
   fullName: TFullName;
   age: number;
   email: string;
@@ -31,11 +30,6 @@ export type TUser = {
 };
 
 export interface UserModel extends Model<TUser> {
+  // eslint-disable-next-line no-unused-vars
   isUserExists(userId: number): Promise<TUser | null>;
 }
-
-// for create instance
-// export type UserMethods = {
-//   isUserExists(userId: number): Promise<TUser | null>;
-// };
-// export type UserModel = Model<TUser, Record<string, never>, UserMethods>;

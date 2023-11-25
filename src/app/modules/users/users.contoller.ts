@@ -16,7 +16,8 @@ const createUser = async (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      message: error.message || 'Something went wrong',
+      message: error,
+      description: error.message || 'Something went wrong',
     });
   }
 };
@@ -24,15 +25,26 @@ const createUser = async (req: Request, res: Response) => {
 const getAllUsers = async (req: Request, res: Response) => {
   try {
     const result = await UserServices.getAllUsersIntoDB();
-    res.status(200).json({
-      success: true,
-      message: 'Users fetched successfully!',
-      data: result,
-    });
+    if (result) {
+      res.status(200).json({
+        success: true,
+        message: 'Users fetched successfully!',
+        data: result,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: 'No users found in the database',
+        error: {
+          code: 404,
+          description: 'User collection is empty',
+        },
+      });
+    }
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      message: error.message,
+      message: error,
       error: {
         code: 500,
         description:
