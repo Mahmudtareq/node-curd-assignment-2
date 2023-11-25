@@ -7,7 +7,14 @@ const createUserIntoDB = async (userData: TUser) => {
     throw new Error('User Allready Exists');
   }
   const result = await User.create(userData);
-  return result;
+  // Customize the transformation to exclude the password field
+  const updateNewUserResponse = result.toObject({
+    transform: (doc, ret) => {
+      delete ret.password;
+      return ret;
+    },
+  });
+  return updateNewUserResponse;
 };
 
 const getAllUsersIntoDB = async () => {
