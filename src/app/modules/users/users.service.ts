@@ -6,6 +6,11 @@ const createUserIntoDB = async (userData: TUser) => {
   if (await User.isUserExists(userData.userId)) {
     throw new Error('User Allready Exists');
   }
+  // Check if username already exists
+  const existingUsername = await User.findOne({ username: userData.username });
+  if (existingUsername) {
+    throw new Error('Username is already in use');
+  }
   const result = await User.create(userData);
   // Customize the transformation to exclude the password field
   const updateNewUserResponse = result.toObject({

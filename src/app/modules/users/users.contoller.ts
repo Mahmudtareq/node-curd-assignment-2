@@ -1,12 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from 'express';
 import { UserServices } from './users.service';
-import UserSchemaValidation from './users.validation';
+import { UserSchemaValidation } from './users.validation';
 
 const createUser = async (req: Request, res: Response) => {
   try {
-    const { user: userData } = req.body;
-    const userZodData = UserSchemaValidation.parse(userData);
+    const user = req.body;
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: 'Bad Request',
+        description: 'The "user" field is missing in the request body.',
+      });
+    }
+
+    const userZodData =
+      UserSchemaValidation.createUserSchemaValidation.parse(user);
     const result = await UserServices.createUserIntoDB(userZodData);
     res.status(200).json({
       success: true,
@@ -126,8 +135,10 @@ const deleteUser = async (req: Request, res: Response) => {
 const updateUser = async (req: Request, res: Response) => {
   try {
     const userId = parseInt(req.params.userId);
-    const { user: userData } = req.body;
-    const result = await UserServices.updateUser(userId, userData);
+    const userUpdate = req.body;
+    const userUpdateValidation =
+      UserSchemaValidation.updateUserSchemaValidation.parse(userUpdate);
+    const result = await UserServices.updateUser(userId, userUpdateValidation);
     if (result) {
       res.status(200).json({
         success: true,
