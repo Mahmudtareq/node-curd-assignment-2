@@ -1,4 +1,3 @@
-# assignment-2
 
 It is a TypeScript-based Node.js CRUD application using Express and MongoDB for server-side development. It includes features like user authentication (using bcrypt for password hashing), CORS support, environment variable management with dotenv, and object schema validation using Zod.
 
